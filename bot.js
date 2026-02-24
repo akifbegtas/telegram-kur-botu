@@ -20,50 +20,41 @@ bot.on('message', async (msg) => {
   const chatId = msg.chat.id;
   const text = msg.text ? msg.text.toLowerCase() : '';
 
-  const tetikleyiciler = ['döviz', 'altın', 'kur', 'dolar', 'euro', '/start', 'fiyat'];
+  const tetikleyiciler = ['döviz', 'altın', 'kur', 'dolar', 'euro', '/start', 'fiyat', 'çeyrek'];
   const miAcaba = tetikleyiciler.some(kelime => text.includes(kelime));
 
   if (miAcaba) {
-    bot.sendMessage(chatId, 'Kanka alış-satış makasını hesaplıyorum, bekle geliyorum...');
+    bot.sendMessage(chatId, 'Kanka kuyumcuya bağlanıyorum, bekle...');
 
     try {
       const response = await axios.get('https://finans.truncgil.com/v3/today.json');
-      const veriler = response.data;
+      const v = response.data;
 
-      // Verileri değişkenlere alış ve satış olarak atayalım
-      const usdAlis = veriler.USD.Buying;
-      const usdSatis = veriler.USD.Selling;
-
-      const eurAlis = veriler.EUR.Buying;
-      const eurSatis = veriler.EUR.Selling;
-
-      const altinAlis = veriler['gram-altin'].Buying;
-      const altinSatis = veriler['gram-altin'].Selling;
-
-      const sonucMesaji = `
+      const mesaj = `
 📊 **Güncel Piyasa Verileri**
 
 💵 **Dolar/TL**
-Alış: ${usdAlis} ₺
-Satış: ${usdSatis} ₺
+Alış: ${v.USD.Buying} ₺ | Satış: ${v.USD.Selling} ₺
 
 💶 **Euro/TL**
-Alış: ${eurAlis} ₺
-Satış: ${eurSatis} ₺
+Alış: ${v.EUR.Buying} ₺ | Satış: ${v.EUR.Selling} ₺
 
-🥇 **Gram Altın**
-Alış: ${altinAlis} ₺
-Satış: ${altinSatis} ₺
+✨ **Altın Fiyatları (Alış/Satış)**
+🥇 Gram: ${v['gram-altin'].Buying} / ${v['gram-altin'].Selling} ₺
+🥈 Çeyrek: ${v['ceyrek-altin'].Buying} / ${v['ceyrek-altin'].Selling} ₺
+🥉 Yarım: ${v['yarim-altin'].Buying} / ${v['yarim-altin'].Selling} ₺
+🏆 Tam: ${v['tam-altin'].Buying} / ${v['tam-altin'].Selling} ₺
+👑 Cumhuriyet: ${v['cumhuriyet-altini'].Buying} / ${v['cumhuriyet-altini'].Selling} ₺
 
 *Veriler anlık çekilmiştir.*
       `;
 
-      bot.sendMessage(chatId, sonucMesaji);
+      bot.sendMessage(chatId, mesaj);
     } catch (error) {
       console.error(error);
-      bot.sendMessage(chatId, 'Kanka verileri çekerken API tarafında bir takılma oldu.');
+      bot.sendMessage(chatId, 'Kanka veriler gelmedi, API biraz yavaşladı galiba.');
     }
   }
 });
 
-console.log('Bot alış-satış desteğiyle güncellendi!');
+console.log('Bot altın arşiviyle güncellendi!');
